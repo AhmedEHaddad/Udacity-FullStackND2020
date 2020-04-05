@@ -4,8 +4,9 @@
     </head>
     <body>
         <uL>
-            <li>Todo1</li>
-            
+            {%for d in data%}
+            <li>{{d.description}}</li>
+            {%endfor%}
         </uL>
     </body>
 </html>

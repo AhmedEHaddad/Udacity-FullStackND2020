@@ -1,4 +1,4 @@
-from flask import Flask
+from flask import Flask, render_template
 from flask_sqlalchemy import SQLAlchemy
 
 
@@ -9,10 +9,12 @@ app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db = SQLAlchemy(app)
 
 
+
+
 @app.route('/')
 def index():
     #return 'Welcome to TODO App!' 
-    render_template('index.html', data=[{
+    return render_template('index.html', data=[{
         'description': 'Todo 1'
     },{
         'description': 'Todo 2'
