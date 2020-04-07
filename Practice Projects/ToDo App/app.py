@@ -28,7 +28,7 @@ def index():
 @app.route('/todos/create', methods=['POST'])
 def create_todo():
   #description = request.form.get('description', '')
-  description = request.form.get_json()['description']
+  description = request.get_json()['description']
   todo = Todo(description=description)
   db.session.add(todo)
   db.session.commit()
