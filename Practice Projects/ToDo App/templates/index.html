@@ -1,6 +1,7 @@
 <html>
     <head>
         <title>TODO App</title>
+        <script src="../static/js/script.js"></script> 
     </head>
     <style>
         .hidden {
@@ -23,10 +24,10 @@
         </uL>
     </body>
     <script>
-        const checkboxes = document.querySelectorAll('.check-completed');
+        let checkboxes = document.querySelectorAll('.check-completed');
         for (let i =0; i<checkboxes.length; i++){
             const checkbox = checkboxes[i];
-            checkbox.onchange = function chck(e){
+            checkbox.onchange = function(e){
                 console.log('event', e);
                 const newCompleted = e.target.checked;
                 const todoId = e.target.dataset['id'];
@@ -72,15 +73,32 @@
                 //add checkbox
                 var x = document.createElement("INPUT");
                 x.setAttribute("type", "checkbox");
+                //
+                let idd = jsonResponse['id'];
+                console.log(idd);
+                x.setAttribute("class", "check-completed");
+                x.setAttribute("data-id", idd);
                 //document.getElementById('todos').appendChild(x);
                 liItem.insertAdjacentElement('afterbegin',x);
                 //
-                x.setAttribute("class", "check-completed");
+                
                 //x.onchange = chck(e);
                 const checkboxes1 = document.querySelectorAll('.check-completed');
-                for (let i =0; i<checkboxes1.length; i++){}
-                checkboxes1[i].onchange = chck(e);
-                document.getElementById('error').className = 'hidden';
+                for (let i =0; i<checkboxes1.length; i++){
+                    if (i == checkboxes1.length - 1){
+                        console.log(i);
+                        chckbox = checkboxes1[i];
+                        //chckbox.onchange = chck(e);
+                        chckbox.onchange = function(e){
+                            chck(e);
+                        }
+
+                        document.getElementById('error').className = 'hidden';
+                    }
+                    
+                }
+                //checkboxes1[i].onchange = chck(e);
+                //document.getElementById('error').className = 'hidden';
 
                 
             })
