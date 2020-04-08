@@ -116,6 +116,7 @@
                 var xbtn = document.createElement("BUTTON");
                 xbtn.setAttribute("class", "delete-button");
                 xbtn.setAttribute("data-id", idd);
+                xbtn.innerHTML = '&cross;';
                 liItem.insertAdjacentElement('beforeend',xbtn);
                  
                 
@@ -133,7 +134,18 @@
 
                         document.getElementById('error').className = 'hidden';
                     }
-                    
+                //add ajax delete compatability to newly created item
+                const deleteBtnss = document.querySelectorAll('.delete-button');
+                for (let ii = 0; ii < deleteBtnss.length; ii++) {
+                    if(ii == deleteBtnss.length-1){
+                        const btnd = deleteBtnss[ii];
+                        btnd.onclick = function(e) {
+                        deleteItem(e);
+                        //remove button, li and button without refresh.                       
+                        btnd.parentElement.remove();
+                    }
+                    }
+                }
                 }
                 //checkboxes1[i].onchange = chck(e);
                 //document.getElementById('error').className = 'hidden';
