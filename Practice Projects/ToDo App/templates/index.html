@@ -9,19 +9,47 @@
         }
         ul {
             list-style: none;
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            width: 250px;
         }
+        li {
+            clear: both;
+        }
+        li button {
+            -webkit-appearance: none;
+            border: none;
+            outline: none;
+            color: red;
+            float: right;
+            cursor: pointer;
+            font-size: 20px;
+        }
+        .lists-wrapper, .todos-wrapper {
+            display: inline-block;
+            vertical-align: top;
+        }
+        
     </style>
     <body>
-        <form id="form" method="post" action="/todos/create">
-            <input type="text" id="description" name="description" />
-            <input type="submit" value="Create" />
-        </form>
-        <div id="error" class="hidden">Something went wrong</div>
-        <uL id="todos">
-            {%for d in data%}
-            <li><input type="checkbox" class = "check-completed" data-id = "{{d.id}}" {% if d.completed %} checked {% endif %}/>{{d.description}}</li>
-            {%endfor%}
-        </uL>
+        <div class="todos-wrapper">
+            <!--<h4> active_list.name </h4>-->
+            <form id="form" method="post" action="/todos/create">
+                <input type="text" id="description" name="description" />
+                <input type="submit" value="Create" />
+            </form>
+            <div id="error" class="hidden">Something went wrong</div>
+            <uL id="todos">
+                {%for d in data%}
+                <li>
+                    <input type="checkbox" class = "check-completed" data-id = "{{d.id}}" {% if d.completed %} checked {% endif %}/>
+                    {{d.description}}
+                    <button class="delete-button" data-id="{{ d.id }}">&cross;</button>
+                </li>
+                {%endfor%}
+            </uL>
+        </div>
     </body>
     <script>
         let checkboxes = document.querySelectorAll('.check-completed');
@@ -40,6 +68,9 @@
                     headers: {
                         'Content-Type': 'application/json'
                     }
+                })
+                .then (function(){
+                    document.getElementById('error').className = 'hidden';
                 })
                 .catch(function(){
                     document.getElementById('error').className = '';
@@ -81,8 +112,15 @@
                 //document.getElementById('todos').appendChild(x);
                 liItem.insertAdjacentElement('afterbegin',x);
                 //
+                //add delete button to newly ajax created item
+                var xbtn = document.createElement("BUTTON");
+                xbtn.setAttribute("class", "delete-button");
+                xbtn.setAttribute("data-id", idd);
+                liItem.insertAdjacentElement('beforeend',xbtn);
+                 
                 
                 //x.onchange = chck(e);
+                //add ajax completed check compatability to newly created item
                 const checkboxes1 = document.querySelectorAll('.check-completed');
                 for (let i =0; i<checkboxes1.length; i++){
                     if (i == checkboxes1.length - 1){
@@ -101,10 +139,24 @@
                 //document.getElementById('error').className = 'hidden';
 
                 
+
+
+                
             })
             .catch(function(){
                 document.getElementById('error').className = '';
             })
+        }
+        //delete an item from loaded ones
+        const deleteBtns = document.querySelectorAll('.delete-button');
+        for (let i = 0; i < deleteBtns.length; i++) {
+            const btn = deleteBtns[i];
+            btn.onclick = function(e) {
+                deleteItem(e);
+                //remove button, li and button without refresh.
+                //btn.parentNode.removeChild(btn, );
+                btn.parentElement.remove();
+            }
         }
     </script>
 </html>

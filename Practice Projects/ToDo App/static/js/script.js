@@ -16,3 +16,23 @@ function chck(e){
         document.getElementById('error').className = '';
     })
 }
+
+function deleteItem(e){
+    console.log('event', e);
+    const todoId = e.target.dataset['id'];
+    fetch('/todos/' + todoId, {
+        method: 'DELETE'
+      })//;
+    .then(function (response){
+        return response.json();
+        
+    })
+    .then (function (jsonRsponse){
+        console.log(jsonRsponse);
+        let idd = jsonResponse['id'];
+        
+    })
+    .catch(function(){
+        //document.getElementById('error').className = '';
+    })
+}
