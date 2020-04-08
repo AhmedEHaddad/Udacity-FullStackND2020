@@ -1,0 +1,11 @@
+body {
+    font-family: sans-serif;
+}
+
+.icon-cog {
+    color: white;
+}
+
+.hidden {
+    display: none;
+}

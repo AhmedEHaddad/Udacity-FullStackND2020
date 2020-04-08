@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="EN">
+<head>
+    <meta charset="utf-8">
+    <meta content="width=device-width, initial-scale=1" name="viewport">
+    <title>To do app</title>
+    <link href="https://cdn.jsdelivr.net/npm/bulma@0.8.0/css/bulma.min.css" rel="stylesheet">
+    <link href="{{ url_for('static', filename='css/main.css') }}" rel="stylesheet">
+    <script defer src="https://use.fontawesome.com/releases/v5.3.1/js/all.js"></script>
+</head>
+<body>
+
+<section class="section">
+    <div class="container">
+        <h1 class="title">
+            To do app with Flask
+        </h1>
+    </div>
+</section>
+
+<section class="section">
+    <div id="error" class="hidden">Something went wrong</div>
+    <div class="container">
+
+        <ul id="todos">
+        {% for d in data %}
+            <li><input class="check-completed" data-id="{{ d.id }}" type="checkbox" {% if d.completed %} checked {% endif %} /> {{ d.description }}</li>
+        {% endfor %}
+        </ul>
+
+
+<!-- bulma version
+
+        Loop through database entries
+        {% for d in data %}
+
+        <div class="tags has-addons">
+            <span id="todos" class="tag">{{ d.description }}</span>
+            <span class="tag is-success">
+                  <a class="icon-cog" href="">
+                      <i class="fas fa-check"></i>
+                  </a>
+              </span>
+        </div>
+
+        {% endfor %}
+
+        -->
+
+    </div>
+</section>
+
+<section class="section">
+    <div class="container">
+        <form id="form"> <!-- action="/todos/create" method="post"> -->
+            <!-- "action" -> CRUD endpoint. But not needed with AJAX -->
+            <div>
+                <label for="name">Create todo item</label>
+                <input id="description" name="description" type="text"/>
+            </div>
+            <div>
+                <input id="submit" type="submit" value="Create"/>
+            </div>
+        </form>
+    </div>
+</section>
+<script>
+    // find each element with class check-completed
+    const checkboxes = document.querySelectorAll('.check-completed');
+    // loop over them
+    for (let i = 0; i < checkboxes.length; i++) {
+        const checkbox = checkboxes[i];
+        // whenever an element changes
+        checkbox.onchange = function (e) {
+            // console.log('event', e);
+            // set a new variable for later use in fetch
+            const newCompleted = e.target.checked;
+            // ... and relate it to the entry's ID to be used in app.py
+            const todoId = e.target.dataset['id'];
+            // a POST request gets sent to the following route each time we check/uncheck a box
+            fetch('/todos/' + todoId + '/set-completed', {
+                method: 'POST',
+                // get back a long list of information as JSON
+                body: JSON.stringify({
+                    'completed': newCompleted
+                }),
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            })
+            .then(function () {
+                document.getElementById('error').className = 'hidden';
+
+            })
+            .catch(function() {
+                document.getElementById('error').className = '';
+            }) // Only gets triggered if something has gone wrong with the server
+        }
+    }
+
+<!-- AJAX -->
+
+    document.getElementById('form').onsubmit = function (e) {
+        e.preventDefault(); // Default would have caused full page refresh
+        fetch('/todos/create', { // fetch is a promise-based library
+            method: 'POST',
+            body: JSON.stringify({
+                'description': document.getElementById('description').value
+            }),
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        }) // fetch gives back a promise that we can use with .then
+        .then(function(response) {
+            return response.json();
+        })
+        .then(function(jsonResponse) {
+            console.log((jsonResponse));
+            const liItem = document.createElement('LI');
+            liItem.innerHTML = jsonResponse['description'];
+            document.getElementById('todos').appendChild(liItem);
+            document.getElementById('error').className = 'hidden';
+        })
+        .catch(function() {
+            document.getElementById('error').className = '';
+        }) // Only gets triggered if something has gone wrong with the server
+    }
+</script>
+</body>
+</html>
