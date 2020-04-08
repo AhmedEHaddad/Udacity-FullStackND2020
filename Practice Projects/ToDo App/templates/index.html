@@ -30,11 +30,11 @@
                 console.log('event', e);
                 const newCompleted = e.target.checked;
                 const todoId = e.target.dataset['id'];
-                fetch('/todos/set-completed', {
+                fetch('/todos/'+ todoId +'/set-completed', {
                     method: 'POST',
                     body: JSON.stringify({
                         'completed' : newCompleted,
-                        'id' : todoId
+                        //'id' : todoId
                     }),
                     headers: {
                         'Content-Type': 'application/json'

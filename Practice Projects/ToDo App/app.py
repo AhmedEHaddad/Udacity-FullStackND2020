@@ -62,16 +62,17 @@ def create_todo():
     'description' : todo.description
   })'''
 
-  @app.route('/todos/set-completed', methods=['POST'])
-  def set_completed():
-    try:
-      completed = request.get_json()['completed']
-      todo_id = request.get_json()['id']
-      todo = Todo.query.get(todo_id)
-      todo.completed = completed
-      db.session.commit()
-    except:
-      db.session.rollback()
-    finally:
-      db.session.close()
-    return redirect(url_for('index'))
+@app.route('/todos/<todo_id>/set-completed', methods=['POST'])
+def set_completed(todo_id):
+  try:
+    completed = request.get_json()['completed']
+    #todo_id = request.get_json()['id']
+    print('completed', completed)
+    todo = Todo.query.get(todo_id)
+    todo.completed = completed
+    db.session.commit()
+  except:
+    db.session.rollback()
+  finally:
+    db.session.close()
+  return redirect(url_for('index'))
