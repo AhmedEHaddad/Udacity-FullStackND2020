@@ -26,7 +26,7 @@
         const checkboxes = document.querySelectorAll('.check-completed');
         for (let i =0; i<checkboxes.length; i++){
             const checkbox = checkboxes[i];
-            checkbox.onchange = function(e){
+            checkbox.onchange = function chck(e){
                 console.log('event', e);
                 const newCompleted = e.target.checked;
                 const todoId = e.target.dataset['id'];
@@ -39,6 +39,9 @@
                     headers: {
                         'Content-Type': 'application/json'
                     }
+                })
+                .catch(function(){
+                    document.getElementById('error').className = '';
                 })
             }
         }
@@ -64,7 +67,22 @@
                 console.log(jsonResponse);
                 const liItem = document.createElement('LI');
                 liItem.innerHTML = jsonResponse['description'];
-                document.getElementById('todos').appendChild(liItem);
+                document.getElementById('todos').appendChild(liItem);             
+                document.getElementById('error').className = 'hidden';
+                //add checkbox
+                var x = document.createElement("INPUT");
+                x.setAttribute("type", "checkbox");
+                //document.getElementById('todos').appendChild(x);
+                liItem.insertAdjacentElement('afterbegin',x);
+                //
+                x.setAttribute("class", "check-completed");
+                //x.onchange = chck(e);
+                const checkboxes1 = document.querySelectorAll('.check-completed');
+                for (let i =0; i<checkboxes1.length; i++){}
+                checkboxes1[i].onchange = chck(e);
+                document.getElementById('error').className = 'hidden';
+
+                
             })
             .catch(function(){
                 document.getElementById('error').className = '';
