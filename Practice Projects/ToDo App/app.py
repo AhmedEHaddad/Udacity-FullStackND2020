@@ -69,3 +69,9 @@ def create_todo():
       todo_id = request.get_json()['id']
       todo = Todo.query.get(todo_id)
       todo.completed = completed
+      db.session.commit()
+    except:
+      db.session.rollback()
+    finally:
+      db.session.close()
+    return redirect(url_for('index'))
