@@ -61,3 +61,11 @@ def create_todo():
     '''return jsonify({
     'description' : todo.description
   })'''
+
+  @app.route('/todos/set-completed', methods=['POST'])
+  def set_completed():
+    try:
+      completed = request.get_json()['completed']
+      todo_id = request.get_json()['id']
+      todo = Todo.query.get(todo_id)
+      todo.completed = completed
