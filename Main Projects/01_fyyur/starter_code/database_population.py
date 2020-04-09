@@ -43,15 +43,15 @@ db = SQLAlchemy(app)
 
 
 ######## populate artists
-artist1 = Artist(id=1, name="Guns N Petals")
+artist1 = Artist(id=1, name="Guns N Petals", genres = "Rock n Roll")
 db.session.add(artist1)
 db.session.commit()
 
-artist2 = Artist(id=2, name="Matt Quevedo")
+artist2 = Artist(id=2, name="Matt Quevedo", genres = "Jazz")
 db.session.add(artist2)
 db.session.commit()
 
-artist3 = Artist(id=3, name="The Wild Sax Band")
+artist3 = Artist(id=3, name="The Wild Sax Band", genres = " Jazz, Classical ")
 db.session.add(artist3)
 db.session.commit()
 
@@ -59,7 +59,7 @@ db.session.commit()
 ####### populate venues
 venue1 = Venue(id = 1,
     name= "The Musical Hop",
-    genres= ["Jazz", "Reggae", "Swing", "Classical", "Folk"],
+    genres= '["Jazz", "Reggae", "Swing", "Classical", "Folk"]',
     address= "1015 Folsom Street",
     city= "San Francisco",
     state= "CA",
@@ -76,7 +76,7 @@ db.session.commit()
 
 venue2 = Venue(id = 2,
     name= "The Dueling Pianos Bar",
-    genres= ["Classical", "R&B", "Hip-Hop"],
+    genres= '["Classical", "R&B", "Hip-Hop"]',
     address= "335 Delancey Street",
     city= "New York",
     state= "NY",
@@ -92,7 +92,7 @@ db.session.commit()
 
 venue3 = Venue(id = 3,
     name= "Park Square Live Music & Coffee",
-    genres= ["Rock n Roll", "Jazz", "Classical", "Folk"],
+    genres= '["Rock n Roll", "Jazz", "Classical", "Folk"]',
     address= "34 Whiskey Moore Ave",
     city= "San Francisco",
     state= "CA",
@@ -105,7 +105,6 @@ venue3 = Venue(id = 3,
     )
 db.session.add(venue3)
 db.session.commit()
-
 
 
 ####### populate shows 
