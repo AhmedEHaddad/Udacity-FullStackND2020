@@ -30,8 +30,15 @@ migrate = Migrate(app, db)
 # Models.
 #----------------------------------------------------------------------------#
 
+'''shows = db.Table('show_performances',
+    db.Column('id', db.Integer, primary_key=True),
+    db.Column('artist_id', db.Integer, db.ForeignKey('artist.id'), primary_key=True),
+    db.Column('venue_id', db.Integer, db.ForeignKey('venue.id'), primary_key=True),
+    db.Column('start_time', db.DateTime, nullable=False, default=datetime.utcnow)
+)'''
+
 class Venue(db.Model):
-    __tablename__ = 'venue'
+    __tablename__ = 'venues'
 
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String)
@@ -41,13 +48,14 @@ class Venue(db.Model):
     phone = db.Column(db.String(120))
     image_link = db.Column(db.String(500))
     facebook_link = db.Column(db.String(120))
+    shows = db.relationship('Show', backref='venue', lazy=True, cascade="all, delete-orphan")
 
     # TODO: implement any missing fields, as a database migration using Flask-Migrate
-    artists = db.relationship('Artist', secondary=shows,
-      backref=db.backref('venues', lazy=True))
+    #artists = db.relationship('Artist', secondary=show_performances,
+      #backref=db.backref('venues', lazy=True))
 
 class Artist(db.Model):
-    __tablename__ = 'artist'
+    __tablename__ = 'artists'
 
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String)
@@ -57,15 +65,19 @@ class Artist(db.Model):
     genres = db.Column(db.String(120))
     image_link = db.Column(db.String(500))
     facebook_link = db.Column(db.String(120))
+    shows = db.relationship('Show', backref='artist', lazy=True, cascade="all, delete-orphan")
 
     # TODO: implement any missing fields, as a database migration using Flask-Migrate
 
 # TODO Implement Show and Artist models, and complete all model relationships and properties, as a database migration.
-shows = db.Table('shows',
-    db.Column('artist_id', db.Integer, db.ForeignKey('artist.id'), primary_key=True),
-    db.Column('venue_id', db.Integer, db.ForeignKey('venue.id'), primary_key=True),
-    db.Column('start_time', db.DateTime, nullable=False, default=datetime.utcnow)
-)
+class Show(db.Model):
+    __tablename__ = 'shows'
+
+    id = db.Column(db.Integer, primary_key=True)
+    artist_id = db.Column(db.Integer, db.ForeignKey('artists.id'))
+    venue_id = db.Column(db.Integer, db.ForeignKey('venues.id'))
+    start_date = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
+
 
 #----------------------------------------------------------------------------#
 # Filters.
