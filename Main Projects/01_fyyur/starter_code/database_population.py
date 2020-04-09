@@ -2,7 +2,7 @@ from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 import datetime
 #from database_setup import Category, Base, Item, User
-from app import Artist, Venue
+from app import Artist, Venue, Show
 from flask_sqlalchemy import SQLAlchemy
 from flask import Flask
 
@@ -37,7 +37,7 @@ item1 = Item(user_id=1, name="Huawei Mate 30", description="Huawei's 5G phone wi
 """
 
 app = Flask(__name__)
-app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql=//devuser=devpass@localhost=5432/fyyurDB'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://devuser:devpass@localhost:5432/fyyurDB'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db = SQLAlchemy(app)
 
@@ -55,6 +55,7 @@ artist3 = Artist(id=3, name="The Wild Sax Band")
 db.session.add(artist3)
 db.session.commit()
 
+
 ####### populate venues
 venue1 = Venue(id = 1,
     name= "The Musical Hop",
@@ -66,7 +67,7 @@ venue1 = Venue(id = 1,
     website= "https=//www.themusicalhop.com",
     facebook_link= "https=//www.facebook.com/TheMusicalHop",
     seeking_talent= True,
-    seeking_descriptio= "We are on the lookout for a local artist to play every two weeks. Please call us.",
+    seeking_description= "We are on the lookout for a local artist to play every two weeks. Please call us.",
     image_link= "https://images.unsplash.com/photo-1543900694-133f37abaaa5?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=400&q=60"
 
     )
@@ -106,9 +107,27 @@ db.session.add(venue3)
 db.session.commit()
 
 
-####### populate shows
-show = show(id = 1,)
 
+####### populate shows 
+show1 = Show(id = 1,venue_id = 1 ,artist_id =1,  start_time='2019-05-21T21:30:00.000Z')
+db.session.add(show1)
+db.session.commit()
+
+show2 = Show(id = 2,venue_id = 3 ,artist_id =2,  start_time='2019-06-15T23:00:00.000Z')
+db.session.add(show2)
+db.session.commit()
+
+show3 = Show(id = 3,venue_id = 3 ,artist_id =3,  start_time='2035-04-01T20:00:00.000Z')
+db.session.add(show3)
+db.session.commit()
+
+show4 = Show(id = 4,venue_id = 3 ,artist_id =3,  start_time='2035-04-08T20:00:00.000Z')
+db.session.add(show4)
+db.session.commit()
+
+show5 = Show(id = 5,venue_id = 3 ,artist_id =3,  start_time='2035-04-15T20:00:00.000Z')
+db.session.add(show5)
+db.session.commit()
 
 
 
