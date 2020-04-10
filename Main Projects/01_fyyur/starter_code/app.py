@@ -18,14 +18,16 @@ from flask_migrate import Migrate
 # App Config.
 #----------------------------------------------------------------------------#
 
-from config import app
-#app = Flask(__name__)
-#moment = Moment(app)
+#from config import app
+app = Flask(__name__)
+moment = Moment(app)
 app.config.from_object('config')
-#db = SQLAlchemy(app)
+db = SQLAlchemy(app)
 
 # TODO: connect to a local postgresql database
 #migrate = Migrate(app, db)
+SQLALCHEMY_DATABASE_URI = 'postgresql://devuser:devpass@localhost:5432/fyyurDB'
+SQLALCHEMY_TRACK_MODIFICATIONS = False
 
 #----------------------------------------------------------------------------#
 # Models.
@@ -380,7 +382,7 @@ def show_artist(artist_id):
     "past_shows_count": 0,
     "upcoming_shows_count": 3,
   }
-  #data = list(filter(lambda d: d['id'] == artist_id, [data1, data2, data3]))[0]
+  data = list(filter(lambda d: d['id'] == artist_id, [data1, data2, data3]))[0]
   artst = Artist.query.filter_by(id = artist_id).one()
   return render_template('pages/show_artist.html', artist=artst)
 
@@ -503,7 +505,21 @@ def shows():
     "artist_image_link": "https://images.unsplash.com/photo-1558369981-f9ca78462e61?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=794&q=80",
     "start_time": "2035-04-15T20:00:00.000Z"
   }]
-  return render_template('pages/shows.html', shows=data)
+  shws = Show.query.all()
+  data2 = []
+  for shw in Show.query.all():
+    strt_time = str(shw.start_time)
+    shw_dict = {
+    'venue_id': shw.venue.id,
+    'venue_name': shw.venue.name,
+    'artist_id': shw.artist.id,
+    "artist_name": shw.artist.name,
+    "artist_image_link": shw.artist.image_link,
+    "start_time": strt_time
+    }
+    data2.append(shw_dict)
+
+  return render_template('pages/shows.html', shows=data2)
 
 @app.route('/shows/create')
 def create_shows():
