@@ -17,7 +17,14 @@ basedir = os.path.abspath(os.path.dirname(__file__))
 app = Flask(__name__)
 moment = Moment(app)
 #app.config.from_object('config')
-db = SQLAlchemy(app)
+
+db = SQLAlchemy(app, session_options={
+
+    'expire_on_commit': False
+
+})
+
+#db = SQLAlchemy(app)
 ########
 #FLASK_ENV = development
 FLASK_DEBUG = True
