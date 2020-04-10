@@ -57,8 +57,61 @@ class Venue(db.Model):
     # TODO: implement any missing fields, as a database migration using Flask-Migrate
     #artists = db.relationship('Artist', secondary=show_performances,
       #backref=db.backref('venues', lazy=True))
+      
+    @property
+    def upcoming_shows(self):
+        """
+        Returns a list of upcoming shows
+        """
+        current_time = datetime.now()
+        shows_list = self.shows
+        upcoming_shows = [show for show in shows_list if show.start_time >= current_time]
+        upcoming_shows_list = []
+        for show in upcoming_shows:
+          show_dict = {
+            'artist_id': show.artist_id,
+            'artist_name': show.artist.name,
+            'artist_image_link': show.artist.image_link,
+            'start_time': str(show.start_time),
+            }
+          upcoming_shows_list.append(show_dict)
+        return upcoming_shows_list
+
+    @property
+    def num_up_shows(self):
+        """
+        Returns the number of upcoming shows
+        """
+        upcoming_shows = self.upcoming_shows
+        return len(upcoming_shows)
+  
+    @property
+    def past_shows(self):
+        """
+        Returns a list of past shows
+        """
+        current_time = datetime.now()
+        past_shows = [show for show in self.shows if show.start_time < current_time]
+        past_shows_list = []
+        for show in past_shows:
+          show_dict = {
+            'artist_id': show.artist_id,
+            'artist_name': show.artist.name,
+            'artist_image_link': show.artist.image_link,
+            'start_time': str(show.start_time),
+            }
+          past_shows_list.append(show_dict)
+        return past_shows_list
+
+    @property
+    def past_shows_count(self):
+        """
+        Returns number of past shows
+        """
+        return len(self.past_shows)
+
     def __repr__(self):
-        s = f'<Venue id: {self.id}, name: {self.name}, city: {self.city}, ' 
+        s = f'<Venue id: {self.id}, name: {self.name}, city: {self.city}, >' 
         return s
 
 
@@ -149,6 +202,7 @@ def venues():
     }]
   }]
   current_time = datetime.now().strftime('%Y-%m-%d %H:%S:%M')
+  
 
   data2 = []
   cities = []
