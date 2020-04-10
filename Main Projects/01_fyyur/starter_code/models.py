@@ -2,6 +2,11 @@ from flask_sqlalchemy import SQLAlchemy
 #from config import 
 from config import app, db, migrate
 from datetime import datetime
+
+#----------------------------------------------------------------------------#
+# TODO: move geners to seperate model / table (3rd normaliztion)
+#----------------------------------------------------------------------------#
+
 #----------------------------------------------------------------------------#
 # Models.
 #----------------------------------------------------------------------------#
@@ -103,7 +108,7 @@ class Artist(db.Model):
     image_link = db.Column(db.String(500))
     facebook_link = db.Column(db.String(120))
     website = db.Column(db.String(120))
-    seeking_talent = db.Column(db.Boolean)
+    seeking_venue = db.Column(db.Boolean)
     seeking_description = db.Column(db.String(200))
     shows = db.relationship('Show', backref='artist', lazy=True, cascade="all, delete-orphan")
 
