@@ -128,7 +128,7 @@ class Artist(db.Model):
             'venue_id':show.venue_id,
             'venue_name':show.venue.name,
             'venue_image_link': show.venue.image_link,
-            'venue_image_link': show.artist.image_link,
+            
             'start_time': str(show.start_time),
           }
           upcoming_show_list.append(show_dict)
@@ -160,7 +160,7 @@ class Artist(db.Model):
         return len(self.past_shows)
 
     @property
-    def unum_up_shows(self):
+    def num_up_shows(self):
         """
         Returns number of upcoming shows
         """

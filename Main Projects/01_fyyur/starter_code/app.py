@@ -271,7 +271,9 @@ def artists():
     "id": 6,
     "name": "The Wild Sax Band",
   }]
-  return render_template('pages/artists.html', artists=data)
+
+  artsts = Artist.query.all()
+  return render_template('pages/artists.html', artists=artsts)
 
 @app.route('/artists/search', methods=['POST'])
 def search_artists():
@@ -284,9 +286,24 @@ def search_artists():
       "id": 4,
       "name": "Guns N Petals",
       "num_upcoming_shows": 0,
-    }]
+    }]   
   }
-  return render_template('pages/search_artists.html', results=response, search_term=request.form.get('search_term', ''))
+  search_termm=request.form.get('search_term', '')
+  artists = Artist.query.filter(Artist.name.ilike('%'+search_termm+'%')).all()
+  data = []
+  for a in artists:
+    a_dict = {
+      "id": a.id,
+      "name": a.name,
+      "num_upcoming_shows": a.num_up_shows,
+    }
+    data.append(a_dict)
+  response2={
+    "count": len(data),
+    "data": data
+  }
+
+  return render_template('pages/search_artists.html', results=response2, search_term=search_termm)
 
 @app.route('/artists/<int:artist_id>')
 def show_artist(artist_id):
@@ -363,8 +380,9 @@ def show_artist(artist_id):
     "past_shows_count": 0,
     "upcoming_shows_count": 3,
   }
-  data = list(filter(lambda d: d['id'] == artist_id, [data1, data2, data3]))[0]
-  return render_template('pages/show_artist.html', artist=data)
+  #data = list(filter(lambda d: d['id'] == artist_id, [data1, data2, data3]))[0]
+  artst = Artist.query.filter_by(id = artist_id).one()
+  return render_template('pages/show_artist.html', artist=artst)
 
 #  Update
 #  ----------------------------------------------------------------
