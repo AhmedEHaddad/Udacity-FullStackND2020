@@ -10,9 +10,9 @@
 			ID: {{ artist.id }}
 		</p>
 		<div class="genres">
-			{% for genre in artist.genres %}
-			<span class="genre">{{ genre }}</span>
-			{% endfor %}
+			<!-- fix geners models later -->
+			<span class="genre">{{ artist.genres }}</span>
+			
 		</div>
 		<p>
 			<i class="fas fa-globe-americas"></i> {{ artist.city }}, {{ artist.state }}
@@ -44,7 +44,7 @@
 	</div>
 </div>
 <section>
-	<h2 class="monospace">{{ artist.upcoming_shows_count }} Upcoming {% if artist.upcoming_shows_count == 1 %}Show{% else %}Shows{% endif %}</h2>
+	<h2 class="monospace">{{ artist.num_up_shows }} Upcoming {% if artist.num_up_shows == 1 %}Show{% else %}Shows{% endif %}</h2>
 	<div class="row">
 		{%for show in artist.upcoming_shows %}
 		<div class="col-sm-4">
