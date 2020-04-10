@@ -57,6 +57,10 @@ class Venue(db.Model):
     # TODO: implement any missing fields, as a database migration using Flask-Migrate
     #artists = db.relationship('Artist', secondary=show_performances,
       #backref=db.backref('venues', lazy=True))
+    def __repr__(self):
+        s = f'<Venue id: {self.id}, name: {self.name}, city: {self.city}, ' 
+        return s
+
 
 class Artist(db.Model):
     __tablename__ = 'artists'
@@ -72,6 +76,11 @@ class Artist(db.Model):
     shows = db.relationship('Show', backref='artist', lazy=True, cascade="all, delete-orphan")
 
     # TODO: implement any missing fields, as a database migration using Flask-Migrate
+    def __repr__(self):
+          s = f'<Artist id: {self.id}, name: {self.name}, city: {self.city}, ' \
+              + f'state: {self.state}, phone: {self.phone}, genres: {self.genres}, ' \
+              + f'shows: {self.shows}>\n'
+          return s
 
 # TODO Implement Show and Artist models, and complete all model relationships and properties, as a database migration.
 class Show(db.Model):
@@ -81,6 +90,11 @@ class Show(db.Model):
     artist_id = db.Column(db.Integer, db.ForeignKey('artists.id'))
     venue_id = db.Column(db.Integer, db.ForeignKey('venues.id'))
     start_time = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
+
+    def __repr__(self):
+          s = f'<Show id: {self.id}, venue_id: {self.venue_id}, artist_id: {self.artist_id}, '  \
+              + f'start_time: {self.start_time}>\n'
+          return s
 
 
 #----------------------------------------------------------------------------#
@@ -113,7 +127,7 @@ def index():
 def venues():
   # TODO: replace with real venues data.
   #       num_shows should be aggregated based on number of upcoming shows per venue.
-  data=[{
+  data = [{
     "city": "San Francisco",
     "state": "CA",
     "venues": [{
@@ -134,7 +148,22 @@ def venues():
       "num_upcoming_shows": 0,
     }]
   }]
-  return render_template('pages/venues.html', areas=data);
+  current_time = datetime.now().strftime('%Y-%m-%d %H:%S:%M')
+
+  data2 = []
+  cities = []
+  for venue in Venue.query.distinct(Venue.city):
+    if venue.city not in cities:
+      city_venues = Venue.query.filter_by(city = venue.city).all()
+      venues = []
+      city_dict = {
+      'city': venue.city,
+      'state': venue.state,
+      'venues': city_venues
+      }
+      data2.append(city_dict)
+
+  return render_template('pages/venues.html', areas = data2)
 
 @app.route('/venues/search', methods=['POST'])
 def search_venues():
