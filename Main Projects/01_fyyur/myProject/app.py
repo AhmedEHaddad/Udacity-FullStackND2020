@@ -454,6 +454,10 @@ def create_show_submission():
   # called to create new shows in the db, upon submitting new show listing form
   # TODO: insert form data as a new Show record in the db, instead
   error = False
+  show = Show()
+  show.artist_id = request.form.get('artist_id')
+  show.venue_id= request.form.get('venue_id')
+  show.start_time=request.form.get('start_time')
   try:
     '''
     shw = Show(
@@ -462,11 +466,7 @@ def create_show_submission():
       start_time=request.form.get('start_time')
       )
     '''
-    show = Show()
-    show.artist_id = request.form.get('artist_id')
-    show.venue_id= request.form.get('venue_id')
-    #show.start_time=request.form.get('start_time')
-    #show.start_time=request.form.get('start_time')
+    
 
     db.session.add(show)
     db.session.commit()
