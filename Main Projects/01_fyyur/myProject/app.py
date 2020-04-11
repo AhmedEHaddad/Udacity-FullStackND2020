@@ -13,6 +13,7 @@ from logging import Formatter, FileHandler
 from flask_wtf import Form
 from forms import *
 from flask_migrate import Migrate
+import sys
 
 #----------------------------------------------------------------------------#
 # App Config.
@@ -136,6 +137,7 @@ def create_venue_submission():
   # TODO: modify data to be the data object returned from db insertion
   error = False
   try:
+    '''
     venue = Venue(
       name = request.form.get('name'),
       city= request.form.get('city'),
@@ -145,6 +147,15 @@ def create_venue_submission():
       geners = request.form.get('geners'),
       facebook_link =request.form.get('facebook_link')
       )
+      '''
+    venue = Venue()
+    venue.name = request.form.get('name')
+    venue.city= request.form.get('city')
+    venue.state=request.form.get('state')
+    venue.address=request.form.get('address')
+    venue.phone=request.form.get('phone')
+    venue.geners = request.form.getlist('geners')
+    venue.facebook_link =request.form.get('facebook_link')
     db.session.add(venue)
     db.session.commit()
   except:
@@ -348,6 +359,15 @@ def create_artist_submission():
   # TODO: insert form data as a new Venue record in the db, instead
   # TODO: modify data to be the data object returned from db insertion
   error = False
+  artistt = Artist()
+  artistt.name = request.form.get('name')
+  artistt.city= request.form.get('city')
+  artistt.state=request.form.get('state')
+  #address=request.form.get('address'),
+  artistt.phone=request.form.get('phone')
+  artistt.geners = request.form.getlist('genres')
+  artistt.facebook_link =request.form.get('facebook_link')
+    
   try:
     '''
     artist = Artist(
@@ -361,7 +381,7 @@ def create_artist_submission():
       )
     db.session.add(artist)
     db.session.commit()
-    '''
+    
     new_artist = Artist(
       name=request.form['name'],
       genres=request.form['genres'],
@@ -376,14 +396,16 @@ def create_artist_submission():
     )
     db.session.add(new_artist)
     db.session.commit()
-    
+    '''
+    db.session.add(artistt)
+    db.session.commit()
   except:
     error = True
     db.session.rollback()
+    print(sys.exc_info())
     flash('something went wrong: Artist ' + request.form['name'] + ' was not created!')
   finally:
     db.session.close()
-  
   if error:
     abort (400)
   else:
@@ -433,12 +455,20 @@ def create_show_submission():
   # TODO: insert form data as a new Show record in the db, instead
   error = False
   try:
+    '''
     shw = Show(
       artist_id = request.form.get('artist_id'),
       venue_id= request.form.get('venue_id'),
       start_time=request.form.get('start_time')
       )
-    db.session.add(shw)
+    '''
+    show = Show()
+    show.artist_id = request.form.get('artist_id')
+    show.venue_id= request.form.get('venue_id')
+    #show.start_time=request.form.get('start_time')
+    #show.start_time=request.form.get('start_time')
+
+    db.session.add(show)
     db.session.commit()
   except:
     error = True
