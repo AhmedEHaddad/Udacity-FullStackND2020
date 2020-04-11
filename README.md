@@ -14,7 +14,7 @@
 
 
 
-2. [Trivia api](/Main Projects/02_trivia_api/submission)
+2. [Trivia api](./Main Projects/02_trivia_api/submission)
 
 
 
