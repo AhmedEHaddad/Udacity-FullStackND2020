@@ -14,7 +14,7 @@
 
 
 
-2. [Trivia api](./Main Projects/02_trivia_api/submission)
+2. [Trivia api](https://github.com/AhmedEHaddad/Udacity-FullStackND2020/tree/master/Main%20Projects/02_trivia_api/submission)
 
 
 
