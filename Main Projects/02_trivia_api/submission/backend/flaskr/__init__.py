@@ -16,15 +16,16 @@ def create_app(test_config=None):
   '''
   @TODO: Set up CORS. Allow '*' for origins. Delete the sample route after completing the TODOs
   '''
-  CORS(app)
+  CORS(app, resources={r"/api/*": {"origins": "*"}})
   
   '''
   @TODO: Use the after_request decorator to set Access-Control-Allow
   '''
   @app.after_request
   def after_request(response):
-    response.headers.add('Access-Controll-Allow-Headers', 'Content-Type, Authorization')
-    response.headers.add('Access-Controll-Allow-Methods', 'GET, POST, PATCH, DELETE, OPTIONS')
+    response.headers.add('Access-Control-Allow-Headers', 'Content-Type, Authorization')
+    response.headers.add('Access-Control-Allow-Methods', 'GET, POST, PATCH, DELETE, OPTIONS')
+    return response
 
 
   '''
@@ -32,11 +33,14 @@ def create_app(test_config=None):
   Create an endpoint to handle GET requests 
   for all available categories.
   '''
-  '''
-  @app.route('/', methods = ['GET'])
+  
+  @app.route('/')
   def index():
-    return 'Hello There!'
-  '''
+    return jsonify({
+      'message' : 'Hello There!'
+    }) 
+  
+  
   @app.route('/categories', methods = ['GET'])
   def categories():
     categories = Category.query.all()
@@ -47,7 +51,7 @@ def create_app(test_config=None):
         'type' : c.type
       }
       data.append(c_dict)
-    formatted_categos = [c.format for in c in categories]
+    formatted_categos = [c.format() for c in categories]
     #return data
     return jsonify({
       'success' : True,
@@ -77,12 +81,14 @@ def create_app(test_config=None):
     formatted_qs = [q.format() for q in questions]
     curr_catgs = []
     for q in formatted_qs[start:end]:
-      if q('category') not in curr_catgs:
-        curr_catgs.append(q('category'))
+      cat_name = q['category'] #or q.get('category')
+      if cat_name not in curr_catgs:
+        curr_catgs.append(cat_name)
+    
     return jsonify({
       'success' : True,
       'questions' : formatted_qs[start:end],
-      'total questions' : len(formatted_qs)
+      'total questions' : len(formatted_qs),
       'current categories' : curr_catgs
     })
 
@@ -93,12 +99,12 @@ def create_app(test_config=None):
   TEST: When you click the trash icon next to a question, the question will be removed.
   This removal will persist in the database and when you refresh the page. 
   '''
-  @app.route('/questions/<int:question_id>', method = ['DELETE'])
+  @app.route('/questions/<int:question_id>', methods = ['DELETE'])
   def delete_question(question_id):
-    try:
-      q = Question.query.filter_by(id = question_id).one_or_none()
-      if q is None:
-        abort(404)
+    #try:
+    q = Question.query.filter_by(id = question_id).one_or_none()
+    if q is None:
+      abort(404)
 
       q.delete()
     return redirect(url_for('get_questions'))
@@ -130,6 +136,7 @@ def create_app(test_config=None):
     q.insert()
 
     return redirect(url_for('get_questions'))
+    
 
   '''
   @TODO: 
@@ -147,6 +154,10 @@ def create_app(test_config=None):
     search_term=request.args.get('search_term', '')
     result = Question.query.filter(Question.question.ilike('%'+search_term+'%')).all()
     formated_result = [q.format() for q in result]
+    return jsonify({
+      'success' : True,
+      'questions' : formated_result
+    })
 
   '''
   @TODO: 
@@ -156,11 +167,15 @@ def create_app(test_config=None):
   categories in the left column will cause only questions of that 
   category to be shown. 
   '''
-  @app.route('/<str:category_str>/questions', methods = ['GET'])
+  @app.route('/<string:category_str>/questions', methods = ['GET'])
   def cat_questions(category_str):
-    qs = Question.query.filter_by(category = category_str).all()
+    category = Category.query.filter_by(type = category_str).one_or_none
+    qs = Question.query.filter_by(category = category.id).all()
 
     data = [q.format() for q in qs]
+    if qs is None:
+      data = 'not found'
+
 
     return jsonify({
       'success' : True,
@@ -179,12 +194,48 @@ def create_app(test_config=None):
   one question at a time is displayed, the user is allowed to answer
   and shown whether they were correct or not. 
   '''
+  @app.route('/quiz')
+  def play_quiz():
+    curr_category = request.args.get('category')
+    prev_qs = request.args.get('previous questions')
+    catego = Category.query.filter_by(type = curr_category).one_or_none()
+    if catego is None:
+      abort(404)
+    cat_qs = Question.query.filter_by(category = catego.id).all()
+    if cat_qs is None:
+      abort(404)
+    #new_qs = [q.format() for q in cat_qs and not in prev_qs ]
+    new_qs = []
+    
 
   '''
   @TODO: 
   Create error handlers for all expected errors 
   including 404 and 422. 
   '''
+  app.errorhandler(404)
+  def not_found(error):
+      return jsonify({
+          "success": False, 
+          "error": 404,
+          "message": "Not found"
+          }), 404
+
+  app.errorhandler(422)
+  def not_found(error):
+      return jsonify({
+          "success": False, 
+          "error": 422,
+          "message": "Not found"
+          }), 422
+
+  app.errorhandler(400)
+  def not_found(error):
+      return jsonify({
+          "success": False, 
+          "error": 400,
+          "message": "Not found"
+          }), 400
   
   return app
 
