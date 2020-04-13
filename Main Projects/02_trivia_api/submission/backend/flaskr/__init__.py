@@ -33,13 +33,13 @@ def create_app(test_config=None):
   Create an endpoint to handle GET requests 
   for all available categories.
   '''
-  
+  '''
   @app.route('/')
   def index():
     return jsonify({
       'message' : 'Hello There!'
     }) 
-  
+  '''
   
   @app.route('/categories', methods = ['GET'])
   def categories():
@@ -52,10 +52,11 @@ def create_app(test_config=None):
       }
       data.append(c_dict)
     formatted_categos = [c.format() for c in categories]
+    categories_s = [c.type for c in categories]
     #return data
     return jsonify({
       'success' : True,
-      'categories' : formatted_categos,
+      'categories' : categories_s,
       'total categories:' : len(formatted_categos)
     })
 
@@ -84,12 +85,18 @@ def create_app(test_config=None):
       cat_name = q['category'] #or q.get('category')
       if cat_name not in curr_catgs:
         curr_catgs.append(cat_name)
+
+    #forgot this
+    catgs = Category.query.all()
+    #categories = [c.format() for c in catgs]
+    categories = [c.type for c in catgs]
     
     return jsonify({
       'success' : True,
       'questions' : formatted_qs[start:end],
-      'total questions' : len(formatted_qs),
-      'current categories' : curr_catgs
+      'total_questions' : len(formatted_qs),
+      'categories' : categories,
+      'current_category' : None #curr_catgs #just for now hardcoded
     })
 
   '''
@@ -106,8 +113,11 @@ def create_app(test_config=None):
     if q is None:
       abort(404)
 
-      q.delete()
-    return redirect(url_for('get_questions'))
+    q.delete()
+    #return redirect(url_for('get_questions'))
+    return jsonify({
+      'success' : True
+    })
 
   '''
   @TODO: 
@@ -129,13 +139,16 @@ def create_app(test_config=None):
       a = body.get('answer')
     if 'category' in body:
       cat = body.get('category')
-    if 'difficulty score' in body:
-      s = body.get('difficulty score')
+    if 'difficulty' in body:
+      s = body.get('difficulty')
 
-    q = Question(q,s,cat,s)
+    q = Question(qs,s,cat,s)
     q.insert()
 
-    return redirect(url_for('get_questions'))
+    #return redirect(url_for('get_questions'))
+    return jsonify ({
+      'success' : True
+    })
     
 
   '''
@@ -151,8 +164,12 @@ def create_app(test_config=None):
 
   @app.route('/questions/search', methods = ['POST'])
   def search_questions ():
-    search_term=request.args.get('search_term', '')
+    req = request.get_json()
+    search_term=req.get('searchTerm')
+    #search_term=request.args.get('searchTerm', '')
     result = Question.query.filter(Question.question.ilike('%'+search_term+'%')).all()
+    if not result:
+      abort(404)
     formated_result = [q.format() for q in result]
     return jsonify({
       'success' : True,
@@ -168,9 +185,9 @@ def create_app(test_config=None):
   categories in the left column will cause only questions of that 
   category to be shown. 
   '''
-  @app.route('/<string:category_str>/questions', methods = ['GET'])
-  def cat_questions(category_str):
-    categoryy = Category.query.filter_by(type = category_str).one_or_none()
+  @app.route('/categories/<int:category_id>/questions', methods = ['GET'])
+  def cat_questions(category_id):
+    categoryy = Category.query.filter_by(id = category_id).one_or_none()
     if categoryy is None:
       abort(404)
     cat_id_str = str(categoryy.id)
@@ -185,7 +202,8 @@ def create_app(test_config=None):
 
     return jsonify({
       'success' : True,
-      'results' : data
+      'questions' : data,
+      'total_questions' : len(data)
     })
 
 
@@ -202,8 +220,9 @@ def create_app(test_config=None):
   '''
   @app.route('/quiz', methods = ['POST'])
   def play_quiz():
-    curr_category = request.args.get('category')
-    prev_qs = request.args.get('previous questions')
+    body = request.get_json()
+    curr_category = request.args.get('quiz_category')
+    prev_qs = request.args.get('previous_questions')
     catego = Category.query.filter_by(type = curr_category).one_or_none()
     if catego is None:
       abort(404)
@@ -228,7 +247,7 @@ def create_app(test_config=None):
   Create error handlers for all expected errors 
   including 404 and 422. 
   '''
-  app.errorhandler(404)
+  @app.errorhandler(404)
   def not_found(error):
       return jsonify({
           "success": False, 
@@ -236,20 +255,20 @@ def create_app(test_config=None):
           "message": "Not found"
           }), 404
 
-  app.errorhandler(422)
-  def not_found(error):
+  @app.errorhandler(422)
+  def unprocessable(error):
       return jsonify({
-          "success": False, 
-          "error": 422,
-          "message": "Not found"
-          }), 422
+        "success": False, 
+        "error": 422,
+        "message": "unprocessable"
+        }), 422
 
-  app.errorhandler(400)
-  def not_found(error):
+  @app.errorhandler(400)
+  def bad_request(error):
       return jsonify({
           "success": False, 
           "error": 400,
-          "message": "Not found"
+          "message": "Bad request"
           }), 400
   
   return app
