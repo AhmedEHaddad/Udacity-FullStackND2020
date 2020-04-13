@@ -156,7 +156,8 @@ def create_app(test_config=None):
     formated_result = [q.format() for q in result]
     return jsonify({
       'success' : True,
-      'questions' : formated_result
+      'questions' : formated_result,
+      'no. results' : len(formated_result)
     })
 
   '''
@@ -169,12 +170,17 @@ def create_app(test_config=None):
   '''
   @app.route('/<string:category_str>/questions', methods = ['GET'])
   def cat_questions(category_str):
-    category = Category.query.filter_by(type = category_str).one_or_none
-    qs = Question.query.filter_by(category = category.id).all()
+    categoryy = Category.query.filter_by(type = category_str).one_or_none()
+    if categoryy is None:
+      abort(404)
+    cat_id_str = str(categoryy.id)
+    #cat_id_str = str(categoryy.format().get('id'))
+    qs = Question.query.filter_by(category = cat_id_str).all()
 
     data = [q.format() for q in qs]
     if qs is None:
       data = 'not found'
+      abort(404)
 
 
     return jsonify({
@@ -194,18 +200,27 @@ def create_app(test_config=None):
   one question at a time is displayed, the user is allowed to answer
   and shown whether they were correct or not. 
   '''
-  @app.route('/quiz')
+  @app.route('/quiz', methods = ['POST'])
   def play_quiz():
     curr_category = request.args.get('category')
     prev_qs = request.args.get('previous questions')
     catego = Category.query.filter_by(type = curr_category).one_or_none()
     if catego is None:
       abort(404)
-    cat_qs = Question.query.filter_by(category = catego.id).all()
+    cat_id = str(catego.id)
+    cat_qs = Question.query.filter_by(category = cat_id).all()
     if cat_qs is None:
       abort(404)
     #new_qs = [q.format() for q in cat_qs and not in prev_qs ]
     new_qs = []
+    for q in cat_qs:
+      if q not in prev_qs:
+        new_qs.append(q.format())
+
+    return jsonify({
+      'success' : True,
+      'questions' : new_qs
+    })
     
 
   '''
