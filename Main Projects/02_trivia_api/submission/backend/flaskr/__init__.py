@@ -221,24 +221,34 @@ def create_app(test_config=None):
   @app.route('/quiz', methods = ['POST'])
   def play_quiz():
     body = request.get_json()
-    curr_category = request.args.get('quiz_category')
-    prev_qs = request.args.get('previous_questions')
+    #curr_category = request.args.get('quiz_category')
+    #prev_qs = request.args.get('previous_questions')
+    curr_category = body.get('quiz_category')
+    prev_qs = body.get('previous_questions')
     catego = Category.query.filter_by(type = curr_category).one_or_none()
     if catego is None:
       abort(404)
     cat_id = str(catego.id)
     cat_qs = Question.query.filter_by(category = cat_id).all()
+    cat_qs_ids = [q.id for q in cat_qs]
     if cat_qs is None:
       abort(404)
     #new_qs = [q.format() for q in cat_qs and not in prev_qs ]
     new_qs = []
     for q in cat_qs:
-      if q not in prev_qs:
+      if str(q.id) not in prev_qs:
         new_qs.append(q.format())
+
+    
+
+    valid_list = list(set(cat_qs_ids) - set(prev_qs))
+    #random.choice(valid_list)
+
+    new_question = cat_qs[cat_qs_ids.index(random.choice(valid_list))]
 
     return jsonify({
       'success' : True,
-      'questions' : new_qs
+      'question' : new_question.format() #cat_qs[random.choice(valid_list)].question #valid_list
     })
     
 
