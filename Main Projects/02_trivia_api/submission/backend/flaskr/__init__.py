@@ -78,6 +78,8 @@ def create_app(test_config=None):
     questions = Question.query.all()
     page = request.args.get('page', 1, type =int)
     start = (page - 1) * 10
+    if page > len(questions) / 10:
+      abort(404)
     end = start + 10
     formatted_qs = [q.format() for q in questions]
     curr_catgs = []
